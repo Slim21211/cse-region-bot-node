@@ -5,7 +5,7 @@ import { isAdmin } from '../middleware/auth';
 
 export function setupHomeHandler(bot: Telegraf<MyContext>) {
   bot.command('home', async (ctx) => {
-    const keyboard = Markup.keyboard([
+    let keyboard = Markup.keyboard([
       ['Для стажеров', 'Базовое обучение'],
       ['КАРГО', 'ПВЗ и почтоматы'],
       ['СБП', 'Для наставника'],
@@ -21,9 +21,12 @@ export function setupHomeHandler(bot: Telegraf<MyContext>) {
       ['Привязка грузовых мест при сборе. Сдача в ячейку', 'Обновление МПК']
     ]).resize();
 
-    // Add admin button for admins
+    // ✅ Добавляем кнопку для админов через новый Markup.keyboard()
     if (ctx.from && isAdmin(ctx.from.id)) {
-      keyboard.keyboard.push(['Функции для администраторов']);
+      keyboard = Markup.keyboard([
+        ...keyboard.reply_markup.keyboard, // берём старые кнопки
+        ['Функции для администраторов']    // добавляем новую
+      ]).resize();
     }
 
     await ctx.reply('Выберите раздел:', {
