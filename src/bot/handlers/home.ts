@@ -21,11 +21,10 @@ export function setupHomeHandler(bot: Telegraf<MyContext>) {
       ['Привязка грузовых мест при сборе. Сдача в ячейку', 'Обновление МПК']
     ]).resize();
 
-    // ✅ Добавляем кнопку для админов через новый Markup.keyboard()
     if (ctx.from && isAdmin(ctx.from.id)) {
       keyboard = Markup.keyboard([
-        ...keyboard.reply_markup.keyboard, // берём старые кнопки
-        ['Функции для администраторов']    // добавляем новую
+        ...keyboard.reply_markup.keyboard,
+        ['Функции для администраторов']
       ]).resize();
     }
 

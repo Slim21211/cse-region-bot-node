@@ -1,3 +1,4 @@
+import { supabase } from '../../database/supabase';
 import { MyContext } from '../../types';
 import { InlineKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 
@@ -13,8 +14,20 @@ export class DocumentService {
       if (startText && messageText) {
         await ctx.reply(messageText);
       }
+      const { data } = supabase.storage
+        .from('files')
+        .getPublicUrl(documentPath);
 
-      await ctx.reply(`📄 Документ: ${documentPath.split('/').pop()}`);
+        const filename = documentPath.split('/').pop() || 'document.pdf';
+
+      if (!data?.publicUrl) {
+        throw new Error('Не удалось получить ссылку на документ');
+      }
+
+      await ctx.replyWithDocument(
+        { url: data.publicUrl, filename },
+        { caption: `📄 Документ: ${filename}` }
+      );
 
       if (finalText) {
         await ctx.reply('Для возврата нажмите /home', { parse_mode: 'HTML' });
